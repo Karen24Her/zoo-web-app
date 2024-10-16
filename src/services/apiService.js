@@ -1,7 +1,26 @@
 // src/services/apiService.js
 import axios from 'axios';
 
-const API_URL = 'https://taller-api-restful.onrender.com/api'; // Asegúrate de que la URL de la API sea correcta
+const API_URL = 'https://taller-api-restful.onrender.com/api'; // Asegúrate de que la URL sea correcta
+
+// Función para obtener el token JWT almacenado
+const getAuthToken = () => {
+  return localStorage.getItem('jwtToken');
+};
+
+// Configurar axios para que envíe el token JWT en el encabezado de las solicitudes
+axios.interceptors.request.use(
+  (config) => {
+    const token = getAuthToken();
+    if (token) {
+      config.headers.Authorization = `Bearer ${token}`;
+    }
+    return config;
+  },
+  (error) => {
+    return Promise.reject(error);
+  }
+);
 
 export const getZoos = () => {
   return axios.get(`${API_URL}/zoos`);
