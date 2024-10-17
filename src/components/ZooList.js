@@ -153,11 +153,6 @@ const ZooList = () => {
           value={newZoo.location}
           onChange={(e) => setNewZoo({ ...newZoo, location: e.target.value })}
         />
-        <input
-          type="text"
-          placeholder="Agregar Animal (opcional)"
-          onBlur={(e) => setNewZoo({ ...newZoo, animals: [...newZoo.animals, { name: e.target.value }] })}
-        />
         <button onClick={handleCreateZoo}>Crear Zoológico</button>
 
         <div>
