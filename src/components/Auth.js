@@ -1,43 +1,54 @@
-// src/components/Auth.js
-import React, { useState, useEffect } from 'react';
-import { useLocation, useNavigate } from 'react-router-dom';
+import React, { useState } from 'react';
+import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
 
-const Auth = () => {
-  const [token, setToken] = useState('');
-  const location = useLocation(); // Usamos useLocation para obtener el token pasado desde Register.js
-  const navigate = useNavigate();  // Hook para redirecciones
+const Auth = ({ closeModal }) => {
+  const [token, setToken] = useState(localStorage.getItem('jwtToken') || '');
+  const [error, setError] = useState('');
+  const navigate = useNavigate();
 
-  // Usar el token que viene desde Register.js si está presente
-  useEffect(() => {
-    if (location.state?.token) {
-      setToken(location.state.token);
-    }
-  }, [location]);
-
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    // Almacenar el token ingresado en localStorage
-    localStorage.setItem('jwtToken', token);
-    alert('Token guardado correctamente. Redirigiendo a la lista de zoológicos...');
-    // Redirigir automáticamente a la lista de zoológicos
-    navigate('/zoos');
+    setError('');
+
+    try {
+      // Hacemos una solicitud para listar zoológicos, enviando el token en los headers
+      const response = await axios.get('https://taller-api-restful.onrender.com/api/zoos', {
+        headers: {
+          Authorization: `Bearer ${token}` // Enviar el token en los headers
+        }
+      });
+
+      if (response.status === 200) {
+        alert('Autenticación exitosa. Redirigiendo a la lista de zoológicos...');
+        navigate('/zoos'); // Redirigir a la lista de zoológicos
+        closeModal(); // Cerrar el modal de autenticación
+      }
+    } catch (err) {
+      console.error("Error durante la autenticación:", err);
+      setError('Autenticación fallida. Por favor, revisa el token e inténtalo de nuevo.');
+    }
   };
 
   return (
-    <div>
-      <h1>Autenticación</h1>
-      <form onSubmit={handleSubmit}>
-        <div>
-          <label>Token JWT:</label>
-          <input
-            type="text"
-            value={token}
-            onChange={(e) => setToken(e.target.value)}
-            required
-          />
-        </div>
-        <button type="submit">Guardar Token</button>
-      </form>
+    <div className="modal">
+      <div className="modal-content">
+        <span className="close" onClick={closeModal}>&times;</span>
+        <h1>Autenticación</h1>
+        <form onSubmit={handleSubmit}>
+          <div>
+            <label>Token JWT:</label>
+            <input
+              type="text"
+              value={token}
+              onChange={(e) => setToken(e.target.value)}
+              required
+            />
+          </div>
+          <button type="submit">Guardar Token</button>
+        </form>
+        {error && <p style={{ color: 'red' }}>{error}</p>}
+      </div>
     </div>
   );
 };

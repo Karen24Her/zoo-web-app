@@ -32,6 +32,10 @@ export default function Register() {
     }
   };
 
+  const redirectToZoos = () => {
+    window.location.href = 'http://localhost:3000/zoos';
+  };
+
   return (
     <div className="d-flex justify-content-center align-items-center min-vh-100 bg-light">
       <div className="card shadow-lg p-4" style={{ maxWidth: '400px', width: '100%' }}>
@@ -76,6 +80,11 @@ export default function Register() {
             <strong>Éxito:</strong> {success}
           </div>
         )}
+
+        {/* Botón para redirigir a la página de zoológicos */}
+        <button className="btn btn-secondary mt-4 w-100" onClick={redirectToZoos}>
+          Zoológicos
+        </button>
       </div>
     </div>
   );
