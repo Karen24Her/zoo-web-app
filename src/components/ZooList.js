@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import 'bootstrap/dist/css/bootstrap.min.css';
+import 'bootstrap-icons/font/bootstrap-icons.css';
+
 
 const ZooList = () => {
   const [zoos, setZoos] = useState([]);
@@ -10,6 +12,9 @@ const ZooList = () => {
   const [showModal, setShowModal] = useState(false);
   const [showAnimalModal, setShowAnimalModal] = useState(false);
   const [newAnimal, setNewAnimal] = useState({ name: '', species: '' });
+  const [selectedAnimal, setSelectedAnimal] = useState(null); // Para manejar el animal seleccionado
+  const [showEditAnimalModal, setShowEditAnimalModal] = useState(false); // Para mostrar la ventana emergente de edición de animales
+
 
   useEffect(() => {
     const fetchZoos = async () => {
@@ -89,40 +94,77 @@ const ZooList = () => {
       console.error("Los campos de nombre y especie son obligatorios.");
       return;
     }
-
+  
     try {
       const token = localStorage.getItem('jwtToken');
-      const response = await axios.post('https://taller-api-restful.onrender.com/api/animals', {
+  
+      // Añadir el nuevo animal a la base de datos
+      const animalResponse = await axios.post('https://taller-api-restful.onrender.com/api/animals', {
         name: newAnimal.name,
         species: newAnimal.species,
-        zoo: selectedZoo._id, 
+        zoo: selectedZoo._id,
       }, {
         headers: {
           Authorization: `Bearer ${token}`,
           'Content-Type': 'application/json',
         },
       });
-
-      // Actualizamos los animales del zoológico seleccionado
-      const updatedZoo = { ...selectedZoo, animals: [...selectedZoo.animals, response.data] };
-
-      // Actualizamos el zoológico en la base de datos
+  
+      const addedAnimal = animalResponse.data;
+  
+      // Actualizar el zoológico localmente con el nuevo animal
+      const updatedZoo = {
+        ...selectedZoo,
+        animals: [...selectedZoo.animals, addedAnimal], // Agregamos el nuevo animal a la lista de animales
+      };
+  
+      // Actualizar el zoológico en la base de datos
       await axios.put(`https://taller-api-restful.onrender.com/api/zoos/${selectedZoo._id}`, updatedZoo, {
         headers: {
           Authorization: `Bearer ${token}`,
           'Content-Type': 'application/json',
         },
       });
-
+  
       // Actualizamos la lista de zoológicos en el estado
       setZoos(zoos.map((zoo) => (zoo._id === selectedZoo._id ? updatedZoo : zoo)));
-
+  
+      // Resetear el formulario y cerrar el modal
       setShowAnimalModal(false);
       setNewAnimal({ name: '', species: '' });
     } catch (err) {
       console.error("Error al agregar un animal:", err);
     }
   };
+  
+
+  const handleDeleteAnimal = async (animalId) => {
+    try {
+      const token = localStorage.getItem('jwtToken');
+      await axios.delete(`https://taller-api-restful.onrender.com/api/animals/${animalId}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+  
+      const updatedZoo = {
+        ...selectedZoo,
+        animals: selectedZoo.animals.filter((animal) => animal._id !== animalId),
+      };
+  
+      await axios.put(`https://taller-api-restful.onrender.com/api/zoos/${selectedZoo._id}`, updatedZoo, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+      });
+  
+      setZoos(zoos.map((zoo) => (zoo._id === selectedZoo._id ? updatedZoo : zoo)));
+    } catch (err) {
+      console.error("Error al eliminar el animal:", err);
+    }
+  };
+  
 
   const openUpdateModal = (zoo) => {
     setSelectedZoo(zoo);
@@ -154,15 +196,6 @@ const ZooList = () => {
           onChange={(e) => setNewZoo({ ...newZoo, location: e.target.value })}
         />
         <button onClick={handleCreateZoo}>Crear Zoológico</button>
-
-        <div>
-          <h4>Animales agregados (opcional):</h4>
-          <ul>
-            {newZoo.animals.map((animal, index) => (
-              <li key={index}>{animal.name}</li>
-            ))}
-          </ul>
-        </div>
       </div>
 
       <table border="1" style={{ width: '100%', marginTop: '20px' }}>
@@ -182,12 +215,17 @@ const ZooList = () => {
               <td>{zoo.name}</td>
               <td>{zoo.location}</td>
               <td>
-                <ul>
-                  {zoo.animals.map((animal, index) => (
-                    <li key={index}>{animal.name}</li>
-                  ))}
-                </ul>
-              </td>
+              <ul>
+                {Array.isArray(zoo.animals) && zoo.animals.map((animal, index) => (
+                  <li key={index}>
+                    {animal.name} 
+                    <button onClick={() => handleDeleteAnimal(animal._id)} className="btn btn-link p-0">
+                      <i className="bi bi-trash"></i>
+                    </button>
+                  </li>
+                ))}
+              </ul>
+            </td>
               <td>
                 <button onClick={() => openUpdateModal(zoo)}>Actualizar</button>
                 <button onClick={() => handleDeleteZoo(zoo._id)}>Eliminar</button>
