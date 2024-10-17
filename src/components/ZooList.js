@@ -1,13 +1,15 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import 'bootstrap/dist/css/bootstrap.min.css'; // Asegúrate de tener Bootstrap instalado
+import 'bootstrap/dist/css/bootstrap.min.css';
 
 const ZooList = () => {
   const [zoos, setZoos] = useState([]);
   const [error, setError] = useState('');
   const [newZoo, setNewZoo] = useState({ name: '', location: '', animals: [] });
-  const [selectedZoo, setSelectedZoo] = useState(null); // Para almacenar el zoológico seleccionado
-  const [showModal, setShowModal] = useState(false); // Controla la visibilidad del modal
+  const [selectedZoo, setSelectedZoo] = useState(null);
+  const [showModal, setShowModal] = useState(false);
+  const [showAnimalModal, setShowAnimalModal] = useState(false);
+  const [newAnimal, setNewAnimal] = useState({ name: '', species: '' });
 
   useEffect(() => {
     const fetchZoos = async () => {
@@ -62,7 +64,7 @@ const ZooList = () => {
         },
       });
       setZoos(zoos.map((zoo) => (zoo._id === selectedZoo._id ? response.data : zoo)));
-      setShowModal(false); // Cerrar el modal
+      setShowModal(false);
     } catch (err) {
       console.error("Error al actualizar el zoológico:", err);
     }
@@ -82,9 +84,54 @@ const ZooList = () => {
     }
   };
 
+  const handleAddAnimal = async () => {
+    if (!newAnimal.name || !newAnimal.species) {
+      console.error("Los campos de nombre y especie son obligatorios.");
+      return;
+    }
+
+    try {
+      const token = localStorage.getItem('jwtToken');
+      const response = await axios.post('https://taller-api-restful.onrender.com/api/animals', {
+        name: newAnimal.name,
+        species: newAnimal.species,
+        zoo: selectedZoo._id, 
+      }, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+      });
+
+      // Actualizamos los animales del zoológico seleccionado
+      const updatedZoo = { ...selectedZoo, animals: [...selectedZoo.animals, response.data] };
+
+      // Actualizamos el zoológico en la base de datos
+      await axios.put(`https://taller-api-restful.onrender.com/api/zoos/${selectedZoo._id}`, updatedZoo, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+      });
+
+      // Actualizamos la lista de zoológicos en el estado
+      setZoos(zoos.map((zoo) => (zoo._id === selectedZoo._id ? updatedZoo : zoo)));
+
+      setShowAnimalModal(false);
+      setNewAnimal({ name: '', species: '' });
+    } catch (err) {
+      console.error("Error al agregar un animal:", err);
+    }
+  };
+
   const openUpdateModal = (zoo) => {
-    setSelectedZoo(zoo); // Cargar el zoológico seleccionado en el modal
-    setShowModal(true); // Mostrar el modal
+    setSelectedZoo(zoo);
+    setShowModal(true);
+  };
+
+  const openAnimalModal = (zoo) => {
+    setSelectedZoo(zoo);
+    setShowAnimalModal(true);
   };
 
   return (
@@ -92,7 +139,6 @@ const ZooList = () => {
       <h1>Lista de Zoológicos</h1>
       {error && <p style={{ color: 'red' }}>{error}</p>}
 
-      {/* Formulario para crear un nuevo zoológico */}
       <div>
         <h2>Crear un nuevo zoológico</h2>
         <input
@@ -114,7 +160,6 @@ const ZooList = () => {
         />
         <button onClick={handleCreateZoo}>Crear Zoológico</button>
 
-        {/* Mostrando los animales que se están agregando */}
         <div>
           <h4>Animales agregados (opcional):</h4>
           <ul>
@@ -125,7 +170,6 @@ const ZooList = () => {
         </div>
       </div>
 
-      {/* Tabla que muestra todos los zoológicos */}
       <table border="1" style={{ width: '100%', marginTop: '20px' }}>
         <thead>
           <tr>
@@ -152,13 +196,13 @@ const ZooList = () => {
               <td>
                 <button onClick={() => openUpdateModal(zoo)}>Actualizar</button>
                 <button onClick={() => handleDeleteZoo(zoo._id)}>Eliminar</button>
+                <button onClick={() => openAnimalModal(zoo)}>Animal Asociado</button>
               </td>
             </tr>
           ))}
         </tbody>
       </table>
 
-      {/* Modal para actualizar el zoológico */}
       {showModal && selectedZoo && (
         <div className="modal show d-block" tabIndex="-1" role="dialog">
           <div className="modal-dialog" role="document">
@@ -186,25 +230,6 @@ const ZooList = () => {
                     onChange={(e) => setSelectedZoo({ ...selectedZoo, location: e.target.value })}
                   />
                 </div>
-                <div>
-                  <label>Animales</label>
-                  <ul>
-                    {selectedZoo.animals.map((animal, index) => (
-                      <li key={index}>
-                        <input
-                          type="text"
-                          value={animal.name}
-                          onChange={(e) => {
-                            const updatedAnimals = selectedZoo.animals.map((a, i) =>
-                              i === index ? { ...a, name: e.target.value } : a
-                            );
-                            setSelectedZoo({ ...selectedZoo, animals: updatedAnimals });
-                          }}
-                        />
-                      </li>
-                    ))}
-                  </ul>
-                </div>
               </div>
               <div className="modal-footer">
                 <button type="button" className="btn btn-secondary" onClick={() => setShowModal(false)}>
@@ -212,6 +237,47 @@ const ZooList = () => {
                 </button>
                 <button type="button" className="btn btn-primary" onClick={handleUpdateZoo}>
                   Guardar cambios
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {showAnimalModal && selectedZoo && (
+        <div className="modal show d-block" tabIndex="-1" role="dialog">
+          <div className="modal-dialog" role="document">
+            <div className="modal-content">
+              <div className="modal-header">
+                <h5 className="modal-title">Agregar Animal a {selectedZoo.name}</h5>
+                <button type="button" className="close" onClick={() => setShowAnimalModal(false)}>
+                  <span>&times;</span>
+                </button>
+              </div>
+              <div className="modal-body">
+                <div>
+                  <label>Nombre del Animal</label>
+                  <input
+                    type="text"
+                    value={newAnimal.name}
+                    onChange={(e) => setNewAnimal({ ...newAnimal, name: e.target.value })}
+                  />
+                </div>
+                <div>
+                  <label>Especie del Animal</label>
+                  <input
+                    type="text"
+                    value={newAnimal.species}
+                    onChange={(e) => setNewAnimal({ ...newAnimal, species: e.target.value })}
+                  />
+                </div>
+              </div>
+              <div className="modal-footer">
+                <button type="button" className="btn btn-secondary" onClick={() => setShowAnimalModal(false)}>
+                  Cerrar
+                </button>
+                <button type="button" className="btn btn-primary" onClick={handleAddAnimal}>
+                  Guardar Animal
                 </button>
               </div>
             </div>
