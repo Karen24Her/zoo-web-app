@@ -97,6 +97,7 @@ const ZooList = () => {
     };
 
     // Función para agregar un nuevo animal
+    // Función para agregar un nuevo animal
     const handleAddAnimal = async () => {
         if (!newAnimal.name || !newAnimal.species) {
             console.error("Los campos de nombre y especie son obligatorios.");
@@ -105,6 +106,8 @@ const ZooList = () => {
 
         try {
             const token = localStorage.getItem('jwtToken');
+
+            // Primero, agregar el nuevo animal a la base de datos
             const animalResponse = await axios.post('https://taller-api-restful.onrender.com/api/animals', {
                 name: newAnimal.name,
                 species: newAnimal.species,
@@ -117,11 +120,21 @@ const ZooList = () => {
             });
 
             const addedAnimal = animalResponse.data;
+
+            // Luego, actualizar el zoológico con la lista de animales actualizada
             const updatedZoo = {
                 ...selectedZoo,
                 animals: [...selectedZoo.animals, addedAnimal],
             };
 
+            await axios.put(`https://taller-api-restful.onrender.com/api/zoos/${selectedZoo._id}`, updatedZoo, {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                    'Content-Type': 'application/json',
+                },
+            });
+
+            // Actualizar la lista de zoológicos en el estado local
             setZoos(zoos.map((zoo) => (zoo._id === selectedZoo._id ? updatedZoo : zoo)));
             setShowAddAnimalModal(false);
             setNewAnimal({ name: '', species: '' });
@@ -129,6 +142,8 @@ const ZooList = () => {
             console.error("Error al agregar un animal:", err);
         }
     };
+
+
 
     // Función para actualizar un animal
     const handleUpdateAnimal = async () => {
