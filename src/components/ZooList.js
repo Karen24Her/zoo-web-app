@@ -2,7 +2,8 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import 'bootstrap-icons/font/bootstrap-icons.css';
-
+import { Link } from 'react-router-dom'; // Importa Link de react-router-dom
+import Dashboard from './Dashboard'; 
 
 const ZooList = () => {
   const [zoos, setZoos] = useState([]);
@@ -14,6 +15,7 @@ const ZooList = () => {
   const [newAnimal, setNewAnimal] = useState({ name: '', species: '' });
   const [selectedAnimal, setSelectedAnimal] = useState(null); // Para manejar el animal seleccionado
   const [showEditAnimalModal, setShowEditAnimalModal] = useState(false); // Para mostrar la ventana emergente de edición de animales
+  const [loading, setLoading] = useState(true); // Para manejar el estado de carga
 
 
   useEffect(() => {
@@ -25,10 +27,13 @@ const ZooList = () => {
             Authorization: `Bearer ${token}`,
           },
         });
+        console.log("Datos de zoológicos recibidos:", response.data); // Verifica los datos en la consola
         setZoos(response.data);
+        setLoading(false);
       } catch (err) {
         console.error("Error al obtener la lista de zoológicos:", err);
         setError('Error al cargar los zoológicos. Asegúrate de que estás autenticado.');
+        setLoading(false);
       }
     };
 
@@ -180,6 +185,10 @@ const ZooList = () => {
     <div>
       <h1>Lista de Zoológicos</h1>
       {error && <p style={{ color: 'red' }}>{error}</p>}
+
+      {/* Botón para redirigir al Dashboard */}
+      <Link to="/dashboard" className="btn btn-primary mb-3">Dashboard</Link>
+      <Link to="/ZooDashboard" className="btn btn-primary mb-3">ZooDashboard</Link>
 
       <div>
         <h2>Crear un nuevo zoológico</h2>
