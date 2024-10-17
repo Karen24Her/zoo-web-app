@@ -5,6 +5,9 @@ import App from './App';
 import reportWebVitals from './reportWebVitals';
 import './index.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
+import 'primereact/resources/themes/saga-blue/theme.css';  // Tema de PrimeReact
+import 'primereact/resources/primereact.min.css';          // Componentes de PrimeReact
+import 'primeicons/primeicons.css';                        // Íconos de PrimeReact
 
 
 const root = ReactDOM.createRoot(document.getElementById('root'));

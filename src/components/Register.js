@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import axios from 'axios';
-import 'bootstrap/dist/css/bootstrap.min.css';
+import { InputText } from 'primereact/inputtext';
+import { Button } from 'primereact/button';
+import { useNavigate } from 'react-router-dom';  // Importar useNavigate para redirigir
 
 export default function Register() {
   const [userData, setUserData] = useState({
@@ -9,6 +11,7 @@ export default function Register() {
   });
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
+  const navigate = useNavigate();  // Usar useNavigate para la redirección
 
   const handleChange = (e) => {
     setUserData({
@@ -26,66 +29,51 @@ export default function Register() {
       const token = response.data.token;
       localStorage.setItem('jwtToken', token);
       setSuccess(`Registro exitoso. Tu token es: ${token}`);
+      navigate('/zoos');  // Redirigir al usuario a /zoos después del registro
     } catch (error) {
-      console.error("Error al registrar usuario:", error);
       setError('Error al registrar usuario. Por favor, inténtalo de nuevo.');
     }
   };
 
-  const redirectToZoos = () => {
-    window.location.href = 'http://localhost:3000/zoos';
-  };
-
   return (
-    <div className="d-flex justify-content-center align-items-center min-vh-100 bg-light">
-      <div className="card shadow-lg p-4" style={{ maxWidth: '400px', width: '100%' }}>
-        <h2 className="text-center mb-4">Registro de Usuario</h2>
-        <p className="text-center text-muted mb-4">Crea una nueva cuenta para acceder al sistema.</p>
-        <form onSubmit={handleSubmit}>
-          <div className="form-group mb-3">
-            <label htmlFor="username" className="form-label">Nombre de Usuario</label>
-            <input
-              id="username"
-              name="username"
-              value={userData.username}
-              onChange={handleChange}
-              required
-              className="form-control"
-              placeholder="Ingresa tu nombre de usuario"
+      <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}>
+        <div style={{ maxWidth: '400px', width: '100%', padding: '20px', boxShadow: '0 0 10px rgba(0, 0, 0, 0.1)', borderRadius: '8px' }}>
+          <h2 style={{ textAlign: 'center', marginBottom: '20px' }}>Registro de Usuario</h2>
+          <form onSubmit={handleSubmit}>
+            <div style={{ marginBottom: '15px' }}>
+              <label htmlFor="username" style={{ display: 'block', marginBottom: '5px' }}>Nombre de Usuario</label>
+              <InputText
+                  id="username"
+                  name="username"
+                  value={userData.username}
+                  onChange={handleChange}
+                  required
+                  style={{ width: '100%', padding: '10px' }}
+              />
+            </div>
+            <div style={{ marginBottom: '15px' }}>
+              <label htmlFor="password" style={{ display: 'block', marginBottom: '5px' }}>Contraseña</label>
+              <InputText
+                  id="password"
+                  name="password"
+                  type="password"
+                  value={userData.password}
+                  onChange={handleChange}
+                  required
+                  style={{ width: '100%', padding: '10px' }}
+              />
+            </div>
+            <Button
+                label="Registrar"
+                icon="pi pi-user"
+                className="p-button-success"
+                type="submit"
+                style={{ width: '100%', padding: '12px', fontSize: '16px' }}
             />
-          </div>
-          <div className="form-group mb-4">
-            <label htmlFor="password" className="form-label">Contraseña</label>
-            <input
-              id="password"
-              name="password"
-              type="password"
-              value={userData.password}
-              onChange={handleChange}
-              required
-              className="form-control"
-              placeholder="Ingresa tu contraseña"
-            />
-          </div>
-          <button type="submit" className="btn btn-primary w-100">Registrar</button>
-        </form>
-
-        {error && (
-          <div className="alert alert-danger mt-4" role="alert">
-            <strong>Error:</strong> {error}
-          </div>
-        )}
-        {success && (
-          <div className="alert alert-success mt-4" role="alert">
-            <strong>Éxito:</strong> {success}
-          </div>
-        )}
-
-        {/* Botón para redirigir a la página de zoológicos */}
-        <button className="btn btn-secondary mt-4 w-100" onClick={redirectToZoos}>
-          Zoológicos
-        </button>
+          </form>
+          {error && <div style={{ marginTop: '20px', color: 'red' }}>{error}</div>}
+          {success && <div style={{ marginTop: '20px', color: 'green' }}>{success}</div>}
+        </div>
       </div>
-    </div>
   );
 }
