@@ -7,6 +7,7 @@ import CreateZoo from './components/CreateZoo';
 import CreateAnimal from './components/CreateAnimal';
 import Register from './components/Register';
 import Auth from './components/Auth';  // Importar el nuevo componente de autenticación
+import AnimalList from './components/AnimalList';
 
 function App() {
   return (
@@ -19,7 +20,7 @@ function App() {
         <Route path="/" element={<Navigate to="/register" />} />
         <Route path="/register" element={<Register />} />
         <Route path="/auth" element={<Auth />} /> {/* Ruta para ingresar el token */}
-
+        <Route path="/AnimalList" element={<AnimalList />} />
       </Routes>
     </Router>
   );
