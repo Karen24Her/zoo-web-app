@@ -1,7 +1,7 @@
 {
   "files": {
     "main.css": "/zoo-web-app/static/css/main.5ffa1b2b.css",
-    "main.js": "/zoo-web-app/static/js/main.d4d185bf.js",
+    "main.js": "/zoo-web-app/static/js/main.b9566fe6.js",
     "static/js/453.a9afd0e1.chunk.js": "/zoo-web-app/static/js/453.a9afd0e1.chunk.js",
     "static/media/primeicons.svg": "/zoo-web-app/static/media/primeicons.6ed59f962963a4a73af2.svg",
     "static/media/primeicons.eot": "/zoo-web-app/static/media/primeicons.ff0c4cd79b2ffca2de54.eot",
@@ -10,11 +10,11 @@
     "static/media/primeicons.woff2": "/zoo-web-app/static/media/primeicons.024b32cc7bf399b1a847.woff2",
     "index.html": "/zoo-web-app/index.html",
     "main.5ffa1b2b.css.map": "/zoo-web-app/static/css/main.5ffa1b2b.css.map",
-    "main.d4d185bf.js.map": "/zoo-web-app/static/js/main.d4d185bf.js.map",
+    "main.b9566fe6.js.map": "/zoo-web-app/static/js/main.b9566fe6.js.map",
     "453.a9afd0e1.chunk.js.map": "/zoo-web-app/static/js/453.a9afd0e1.chunk.js.map"
   },
   "entrypoints": [
     "static/css/main.5ffa1b2b.css",
-    "static/js/main.d4d185bf.js"
+    "static/js/main.b9566fe6.js"
   ]
 }
