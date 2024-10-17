@@ -1,4 +1,6 @@
 // src/App.js
+import './App.css'; // Importa tus estilos globales
+import 'bootstrap/dist/css/bootstrap.min.css'; 
 import React from 'react';
 import { BrowserRouter as Router, Route, Routes, Navigate } from 'react-router-dom';
 import ZooList from './components/ZooList';

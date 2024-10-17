@@ -36,3 +36,10 @@ label {
 input {
   padding: 10px; /* Aumentar el padding de los campos de texto */
 }
+
+@media (max-width: 768px) {
+  .mi-clase {
+    font-size: 14px;
+    padding: 10px;
+  }
+}
