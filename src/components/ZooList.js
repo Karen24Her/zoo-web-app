@@ -130,10 +130,62 @@ const ZooList = () => {
         }
     };
 
+    // Función para actualizar un animal
+    const handleUpdateAnimal = async () => {
+        if (!selectedAnimal.name || !selectedAnimal.species) {
+            console.error("Los campos de nombre y especie son obligatorios.");
+            return;
+        }
+
+        try {
+            const token = localStorage.getItem('jwtToken');
+            await axios.put(`https://taller-api-restful.onrender.com/api/animals/${selectedAnimal._id}`, selectedAnimal, {
+                headers: { Authorization: `Bearer ${token}` },
+            });
+
+            const updatedZoo = {
+                ...selectedZoo,
+                animals: selectedZoo.animals.map((animal) =>
+                    animal._id === selectedAnimal._id ? selectedAnimal : animal
+                ),
+            };
+
+            setZoos(zoos.map((zoo) => (zoo._id === selectedZoo._id ? updatedZoo : zoo)));
+            setShowUpdateAnimalModal(false);
+            setSelectedAnimal(null);
+        } catch (err) {
+            console.error("Error al actualizar el animal:", err);
+        }
+    };
+
+    const handleDeleteAnimal = async (animalId) => {
+        try {
+            const token = localStorage.getItem('jwtToken');
+            await axios.delete(`https://taller-api-restful.onrender.com/api/animals/${animalId}`, {
+                headers: { Authorization: `Bearer ${token}` },
+            });
+
+            const updatedZoo = {
+                ...selectedZoo,
+                animals: selectedZoo.animals.filter((animal) => animal._id !== animalId),
+            };
+
+            setZoos(zoos.map((zoo) => (zoo._id === selectedZoo._id ? updatedZoo : zoo)));
+        } catch (err) {
+            console.error("Error al eliminar el animal:", err);
+        }
+    };
+
     const openAddAnimalModal = (zoo) => {
         setSelectedZoo(zoo);
         setNewAnimal({ name: '', species: '' });
         setShowAddAnimalModal(true);
+    };
+
+    const openUpdateAnimalModal = (zoo, animal) => {
+        setSelectedZoo(zoo);
+        setSelectedAnimal(animal);
+        setShowUpdateAnimalModal(true);
     };
 
     return (
@@ -176,6 +228,8 @@ const ZooList = () => {
                             {rowData.animals.map((animal, index) => (
                                 <li key={index}>
                                     {animal.name}
+                                    <Button icon="pi pi-trash" className="p-button-text p-button-danger p-mr-2" onClick={() => handleDeleteAnimal(animal._id)} />
+                                    <Button icon="pi pi-refresh" className="p-button-text p-button-info" onClick={() => openUpdateAnimalModal(rowData, animal)} />
                                 </li>
                             ))}
                         </ul>
@@ -210,6 +264,26 @@ const ZooList = () => {
                 </div>
                 <div className="p-mt-4">
                     <Button label="Guardar Animal" icon="pi pi-save" className="p-button-primary" onClick={handleAddAnimal} />
+                </div>
+            </Dialog>
+
+            <Dialog header="Actualizar Animal" visible={showUpdateAnimalModal} onHide={() => setShowUpdateAnimalModal(false)}>
+                <div>
+                    <InputText
+                        placeholder="Nombre del Animal"
+                        value={selectedAnimal ? selectedAnimal.name : ''}
+                        onChange={(e) => setSelectedAnimal({ ...selectedAnimal, name: e.target.value })}
+                        className="p-inputtext-lg p-d-block"
+                    />
+                    <InputText
+                        placeholder="Especie del Animal"
+                        value={selectedAnimal ? selectedAnimal.species : ''}
+                        onChange={(e) => setSelectedAnimal({ ...selectedAnimal, species: e.target.value })}
+                        className="p-inputtext-lg p-d-block"
+                    />
+                </div>
+                <div className="p-mt-4">
+                    <Button label="Guardar Cambios" icon="pi pi-save" className="p-button-primary" onClick={handleUpdateAnimal} />
                 </div>
             </Dialog>
 
