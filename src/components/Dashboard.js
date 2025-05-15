@@ -10,7 +10,7 @@ const Dashboard = () => {
     const fetchZoos = async () => {
       try {
         const token = localStorage.getItem('jwtToken');
-        const response = await axios.get('https://taller-api-restful.onrender.com/api/zoos', {
+        const response = await axios.get('https://taller-api-restful-izu0.onrender.com/api/zoos', {
           headers: {
             Authorization: `Bearer ${token}`,
           },

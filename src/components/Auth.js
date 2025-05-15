@@ -13,7 +13,7 @@ const Auth = ({ closeModal }) => {
 
     try {
       // Hacemos una solicitud para listar zoológicos, enviando el token en los headers
-      const response = await axios.get('https://taller-api-restful.onrender.com/api/zoos', {
+      const response = await axios.get('https://taller-api-restful-izu0.onrender.com/api/zoos', {
         headers: {
           Authorization: `Bearer ${token}` // Enviar el token en los headers
         }

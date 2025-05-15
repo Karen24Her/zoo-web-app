@@ -11,7 +11,7 @@ const AnimalList = () => {
     const fetchAnimals = async () => {
       try {
         const token = localStorage.getItem('jwtToken');
-        const response = await axios.get('https://taller-api-restful.onrender.com/api/animals/zoo/{zooId}', {
+        const response = await axios.get('https://taller-api-restful-izu0.onrender.com/api/animals/zoo/{zooId}', {
           headers: {
             Authorization: `Bearer ${token}`,
           },
@@ -34,7 +34,7 @@ const AnimalList = () => {
 
     try {
       const token = localStorage.getItem('jwtToken');
-      const response = await axios.post('https://taller-api-restful.onrender.com/api/animals', newAnimal, {
+      const response = await axios.post('https://taller-api-restful-izu0.onrender.com/api/animals', newAnimal, {
         headers: {
           Authorization: `Bearer ${token}`,
           'Content-Type': 'application/json',
@@ -50,7 +50,7 @@ const AnimalList = () => {
   const handleUpdateAnimal = async (id, updatedAnimal) => {
     try {
       const token = localStorage.getItem('jwtToken');
-      const response = await axios.put(`https://taller-api-restful.onrender.com/api/animals/${id}`, updatedAnimal, {
+      const response = await axios.put(`https://taller-api-restful-izu0.onrender.com/api/animals/${id}`, updatedAnimal, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -64,7 +64,7 @@ const AnimalList = () => {
   const handleDeleteAnimal = async (id) => {
     try {
       const token = localStorage.getItem('jwtToken');
-      await axios.delete(`https://taller-api-restful.onrender.com/api/animals/${id}`, {
+      await axios.delete(`https://taller-api-restful-izu0.onrender.com/api/animals/${id}`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },

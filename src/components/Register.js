@@ -25,7 +25,7 @@ export default function Register() {
     setError('');
     setSuccess('');
     try {
-      const response = await axios.post('https://taller-api-restful.onrender.com/api/users', userData);
+      const response = await axios.post('https://taller-api-restful-izu0.onrender.com/api/users', userData);
       const token = response.data.token;
       localStorage.setItem('jwtToken', token);
       setSuccess(`Registro exitoso. Tu token es: ${token}`);

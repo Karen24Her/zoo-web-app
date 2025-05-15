@@ -127,7 +127,7 @@ const ZooList = () => {
                 animals: [...selectedZoo.animals, addedAnimal],
             };
 
-            await axios.put(`https://taller-api-restful.onrender.com/api/zoos/${selectedZoo._id}`, updatedZoo, {
+            await axios.put(`https://taller-api-restful-izu0.onrender.com/api/zoos/${selectedZoo._id}`, updatedZoo, {
                 headers: {
                     Authorization: `Bearer ${token}`,
                     'Content-Type': 'application/json',
@@ -154,7 +154,7 @@ const ZooList = () => {
 
         try {
             const token = localStorage.getItem('jwtToken');
-            await axios.put(`https://taller-api-restful.onrender.com/api/animals/${selectedAnimal._id}`, selectedAnimal, {
+            await axios.put(`https://taller-api-restful-izu0.onrender.com/api/animals/${selectedAnimal._id}`, selectedAnimal, {
                 headers: { Authorization: `Bearer ${token}` },
             });
 
@@ -176,7 +176,7 @@ const ZooList = () => {
     const handleDeleteAnimal = async (animalId) => {
         try {
             const token = localStorage.getItem('jwtToken');
-            await axios.delete(`https://taller-api-restful.onrender.com/api/animals/${animalId}`, {
+            await axios.delete(`https://taller-api-restful-izu0.onrender.com/api/animals/${animalId}`, {
                 headers: { Authorization: `Bearer ${token}` },
             });
 
