@@ -31,7 +31,13 @@ export default function Register() {
       setSuccess(`Registro exitoso. Tu token es: ${token}`);
       navigate('/zoos');  // Redirigir al usuario a /zoos después del registro
     } catch (error) {
-      setError('Error al registrar usuario. Por favor, inténtalo de nuevo.');
+      if (error.response) {
+        setError(`Error: ${error.response.data.message}${error.response.data.error ? ' - ' + error.response.data.error : ''}`);
+        console.error('Error backend:', error.response.data);
+      } else {
+        setError('Error al registrar usuario. Por favor, inténtalo de nuevo.');
+        console.error('Error:', error.message);
+      }
     }
   };
 

@@ -12,7 +12,7 @@ import Auth from './components/Auth';  // Importar el nuevo componente de autent
 import AnimalList from './components/AnimalList';
 import Dashboard from './components/Dashboard';
 import ZooDashboard from './components/ZooDashboard';
-
+import Login from "./components/login";
 function App() {
   return (
     <Router>
@@ -27,6 +27,7 @@ function App() {
         <Route path="/AnimalList" element={<AnimalList />} />
         <Route path='/dashboard' element={<Dashboard />} />
         <Route path='/ZooDashboard' element={<ZooDashboard />} />
+        <Route path="/login" element={<Login />} />
       </Routes>
     </Router>
   );
